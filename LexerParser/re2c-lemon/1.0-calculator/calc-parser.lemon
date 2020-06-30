@@ -1,0 +1,51 @@
+%include{ 
+    #include "calc-token.h"
+}
+%name Calculator
+%token_prefix CALC_
+%token_type {struct CalcToken}
+
+%parse_accept {
+    printf("parsing complete!\n");
+}
+
+%parse_failure {
+    fprintf(stderr,"Parse failure...\n");
+}
+
+%syntax_error {
+    fprintf(stderr,"Syntax error...\n");
+}
+
+%left PLUS MINUS.
+%left MULTIPLY DIVIDE.
+%nonassoc L_PAREN R_PAREN.
+
+result(R) ::= expr(A) EQUALS. {
+    R.value = A.value;
+    printf(" %f\n", R.value);
+}
+expr(R)   ::= expr(A) PLUS expr(B). {
+    R.value = A.value + B.value;
+    //printf("+");
+}
+expr(R)   ::= expr(A) MINUS expr(B). {
+    R.value = A.value - B.value;
+    //printf("-");
+}
+expr(R)   ::= expr(A) MULTIPLY expr(B). {
+    R.value = A.value * B.value;
+    //printf("*");
+}
+expr(R)   ::= expr(A) DIVIDE expr(B). {
+    R.value = A.value / B.value;
+    //printf("/");
+}
+expr(R)   ::= L_PAREN expr(A) R_PAREN. {
+    R.value = A.value;
+    //printf("(%f)", R.value);
+}
+expr(R)   ::= NUMBER(A). {
+    R.value = A.value;
+    //printf("%f", R.value);
+}
